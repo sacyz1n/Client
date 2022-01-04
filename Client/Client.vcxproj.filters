@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="00. GameObject">
+      <UniqueIdentifier>{15e56f08-5508-4710-8c68-ca7b10c0ac2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene">
+      <UniqueIdentifier>{91dba28e-04f6-416b-bb62-5ba4ad2d2141}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Etc">
+      <UniqueIdentifier>{9f3452ef-5424-45b3-8d53-b4ae12ead166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager">
+      <UniqueIdentifier>{56992792-93c7-4c9e-9db1-3d6410466876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\Scene">
+      <UniqueIdentifier>{2d4cd151-673b-456e-b1e7-bb106e908959}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\Input">
+      <UniqueIdentifier>{772af34f-fbd1-42cc-92db-8e4f5edcf4f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\Timer">
+      <UniqueIdentifier>{2fa00455-3705-4b5b-a346-0f2c4327f00d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\System">
+      <UniqueIdentifier>{89397163-48e3-4427-8495-4bc024faf475}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\TestScene">
+      <UniqueIdentifier>{f150e57e-0a2d-430f-80e7-96353f0d51bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\Render">
+      <UniqueIdentifier>{9dd671e6-ba4e-4b5d-861d-1332da3a048e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\Network">
+      <UniqueIdentifier>{977c0494-e06e-4bc6-928d-12ef777bff2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. GameObject\Player">
+      <UniqueIdentifier>{bcd956e6-f595-4dee-9ded-b8a175e62294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Component">
+      <UniqueIdentifier>{1cd152b2-78a7-4700-9019-57ce412b57ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Interface">
+      <UniqueIdentifier>{859515c3-5210-4a8a-b55d-58aae4f8d5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Component\Transform">
+      <UniqueIdentifier>{8ddff7b0-63a7-4e95-845c-8a179d5d2067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Utils">
+      <UniqueIdentifier>{c6bdac16-e85e-4396-89ff-b90d69b453f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Utils\Math">
+      <UniqueIdentifier>{0a235b0f-a35c-4c04-9ae9-da551e82482c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Component\PlayerController">
+      <UniqueIdentifier>{1ea6db47-89fd-4a11-aaf6-aa8721fe4457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Component\Model">
+      <UniqueIdentifier>{9520d468-310f-47e6-970d-cbefdd31d5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Manager\Model">
+      <UniqueIdentifier>{9b725d31-679d-408a-bd03-a7bbc1e7dca3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>99. Etc</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>98. Manager\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>98. Manager\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerManager.cpp">
+      <Filter>98. Manager\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>98. Manager\System</Filter>
+    </ClCompile>
+    <ClCompile Include="TestInGameScene.cpp">
+      <Filter>01. Scene\TestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="IGameObject.cpp">
+      <Filter>03. Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="IScene.cpp">
+      <Filter>03. Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingManager.cpp">
+      <Filter>98. Manager\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkManager.cpp">
+      <Filter>98. Manager\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>98. Manager\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Hero.cpp">
+      <Filter>00. GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleRendering.cpp">
+      <Filter>98. Manager\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>02. Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>04. Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>02. Component\PlayerController</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>02. Component\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>98. Manager\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>98. Manager\Model</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>99. Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>98. Manager\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>98. Manager\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>98. Manager\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>98. Manager\System</Filter>
+    </ClInclude>
+    <ClInclude Include="TestInGameScene.h">
+      <Filter>01. Scene\TestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameObject.h">
+      <Filter>03. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IScene.h">
+      <Filter>03. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IComponent.h">
+      <Filter>03. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingManager.h">
+      <Filter>98. Manager\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkManager.h">
+      <Filter>98. Manager\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>98. Manager\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Hero.h">
+      <Filter>00. GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleRendering.h">
+      <Filter>98. Manager\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>02. Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>04. Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>02. Component\PlayerController</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>02. Component\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>98. Manager\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManager.h">
+      <Filter>98. Manager\Model</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
