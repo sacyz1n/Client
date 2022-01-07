@@ -20,7 +20,11 @@ int _tmain()
 	auto networkManager = NetworkManager::GetInstance();
 	auto inputManager = InputManager::GetInstance();
 
-	
+	// Initialize NetworkManager
+	if (!networkManager->Initialize())
+		assert("Error - renderingManager->Initialize()");
+
+
 	// Initialize RenderingManager
 	if (!renderingManager->Initialize())
 		assert("Error - renderingManager->Initialize()");

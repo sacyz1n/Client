@@ -3,6 +3,9 @@
 
 //#undef _UNICODE
 //#undef UNICODE
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <MSWSock.h>
 #include <Windows.h>
 #include <iostream>
 #include <unordered_map>
@@ -16,7 +19,12 @@
 #include <stdarg.h>
 #include <tchar.h>
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include "Vector2.h"
+
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "mswsock.lib")
 
 #define MAX_STR 256
 #define DECLARE_SINGLETON(CLASSNAME)	\

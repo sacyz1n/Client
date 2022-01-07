@@ -169,7 +169,6 @@
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="RenderingManager.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="Session.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="TestInGameScene.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -191,7 +190,6 @@
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="RenderingManager.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Session.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="TestInGameScene.h" />
     <ClInclude Include="Timer.h" />
