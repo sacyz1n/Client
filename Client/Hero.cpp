@@ -16,7 +16,6 @@ bool Hero::Initialize()
 
 	mModel			  = AddComponent<Model>();
 
-
 	return true;
 }
 

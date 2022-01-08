@@ -29,9 +29,9 @@ public:
 	void Update();
 	void Release();
 
-
 	void TryConnect(const char* _ip, const unsigned short _port);
 	void TryDisconnect();
+	bool TryRecv();
 	bool IsConnect() const { return mIsConnect; }
 	void BindIOCP();
 
@@ -44,12 +44,8 @@ public:
 	void SetNetStateConnect();
 	void SetNetStateDisconnect();
 
-	void IncrementDisconnectIORef() { mDisconnectIORef; }
-	void IncrementConnectIORef() { ++mConnectIORef; }
 	void IncrementRecvIORef() { ++mRecvIORef; }
 	void IncrementSendIORef() { ++mSendIORef; }
-	void DecrementDisconnectIORef() { --mDisconnectIORef; }
-	void DecrementConnectIORef() { --mConnectIORef; }
 	void DecrementRecvIORef() { --mRecvIORef; }
 	void DecrementSendIORef() { --mSendIORef; }
 
@@ -57,12 +53,11 @@ public:
 	void SetNetStateConnecting(bool _flag) { mIsConnecting = _flag; }
 
 	bool IsConnecting() { return mIsConnecting; }
-	void HandleExceptionWorkThread(OVERLAPPED_EX* _context);
 
 private:
+	void HandleExceptionWorkThread(OVERLAPPED_EX* _overlapped);
+	void PostQueuedMessage(OVERLAPPED_EX* _overlapped);
 	void WorkerThread();
-	static LPFN_CONNECTEX ConnectEx;
-	static LPFN_DISCONNECTEX DisconnectEx;
 
 private:
 	bool   mIsRun = false;
@@ -73,18 +68,27 @@ private:
 	int mIsClosing = false;
 	int mIsConnecting = false;
 
-	char mConnectBuf[64] = {};
-
+	// Connect
 	OVERLAPPED_EX mConnectOverlapped	= OVERLAPPED_EX(IOType::Connect);
+	const char* mConnectIP = nullptr;
+	unsigned short mConnectPort = 0;
+
 	OVERLAPPED_EX mDisconnectOverlapped = OVERLAPPED_EX(IOType::Disconnect);
+
+	// Recv
 	OVERLAPPED_EX mRecvOverlapped		= OVERLAPPED_EX(IOType::Recv);
+	int mRecvBytes = 0;
+	WSABUF mRecvWSABuf;
+	char mRecvBuffer[1024] = {};
+
+	// Send
 	OVERLAPPED_EX mSendOverlapped		= OVERLAPPED_EX(IOType::Send);
 
-	std::atomic<int> mDisconnectIORef = 0;
-	std::atomic<int> mConnectIORef = 0;
+
 	std::atomic<int> mRecvIORef = 0;
 	std::atomic<int> mSendIORef = 0;
 	std::mutex mDisconnectLock;
+
 
 	std::unique_ptr<std::thread> mWorkThread;
 };

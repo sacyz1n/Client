@@ -3,10 +3,6 @@
 
 DEFINE_SINGLETON(NetworkManager)
 
-LPFN_CONNECTEX NetworkManager::ConnectEx = nullptr;
-LPFN_DISCONNECTEX NetworkManager::DisconnectEx = nullptr;
-
-
 bool NetworkManager::Initialize()
 {
 	mIsRun = true;
@@ -27,38 +23,6 @@ bool NetworkManager::Initialize()
 		return false;
 
 	mWorkThread = std::make_unique<std::thread>([&]() { WorkerThread(); });
-
-	{
-		DWORD dwBytes;
-		int result = 0;
-
-		auto sock = socket(AF_INET, SOCK_STREAM, 0);
-		if (sock == INVALID_SOCKET)
-			return FALSE;
-		// ConnectEx
-		{
-			GUID guid = WSAID_CONNECTEX;
-			result = WSAIoctl(sock, SIO_GET_EXTENSION_FUNCTION_POINTER,
-				&guid, sizeof(guid),
-				&ConnectEx, sizeof(ConnectEx),
-				&dwBytes, NULL, NULL);
-			if (result != 0)
-				return false;
-		}
-
-		// DisconnnectEx
-		{
-			GUID guid = WSAID_DISCONNECTEX;
-			result = WSAIoctl(sock, SIO_GET_EXTENSION_FUNCTION_POINTER,
-				&guid, sizeof(guid),
-				&DisconnectEx, sizeof(DisconnectEx),
-				&dwBytes, NULL, NULL);
-			if (result != 0)
-				return false;
-		}
-	}
-
-
 	return true;
 }
 
@@ -87,40 +51,11 @@ void NetworkManager::TryConnect(const char* _ip, const unsigned short _port)
 	if (mIsConnect == TRUE)
 		return;
 
-	//SOCKADDR_IN localAddr;
-	//ZeroMemory(&localAddr, sizeof(localAddr));
-	//localAddr.sin_family = AF_INET;
-	//localAddr.sin_port = htons(_port);
-	//inet_pton(AF_INET, "127.0.0.1", &localAddr);
-
-	//if (::bind(mSocket, (struct sockaddr*)&localAddr, sizeof(localAddr) == SOCKET_ERROR))
-	//	return;
-
-	BindIOCP();
-
-	SOCKADDR_IN sockAddr;
-	ZeroMemory(&sockAddr, sizeof(sockAddr));
-	sockAddr.sin_family = AF_INET;
-	sockAddr.sin_port = htons(_port);
-	inet_pton(AF_INET, _ip, &sockAddr.sin_addr);
+	mConnectIP = _ip;
+	mConnectPort = _port;
 
 	SetNetStateConnecting(TRUE);
-	IncrementConnectIORef();
-	DWORD byteSent = 0;
-	BOOL ret = NetworkManager::ConnectEx(mSocket, reinterpret_cast<SOCKADDR*>(&sockAddr), sizeof(sockAddr), 0, 0, 0, reinterpret_cast<OVERLAPPED*>(&mConnectOverlapped));
-
-	if (ret == FALSE || ret == SOCKET_ERROR)
-	{
-		int error = WSAGetLastError();
-
-		if (error != WSA_IO_PENDING)
-		{
-			SetNetStateConnecting(FALSE);
-			DecrementConnectIORef();
-			TryDisconnect();
-			return;
-		}
-	}
+	PostQueuedMessage(&mConnectOverlapped);
 }
 
 void NetworkManager::TryDisconnect()
@@ -132,7 +67,7 @@ void NetworkManager::TryDisconnect()
 	if (mIsClosing == TRUE)
 	{
 		// 모든 I/O 처리가 끝난 경우
-		if (mConnectIORef == 0 && mDisconnectIORef == 0 && mRecvIORef == 0 && mSendIORef == 0)
+		if (mRecvIORef == 0 && mSendIORef == 0)
 		{
 			SetNetStateDisconnect();
 			SetNetStateClosing(FALSE);
@@ -141,17 +76,31 @@ void NetworkManager::TryDisconnect()
 	}
 
 	SetNetStateClosing(TRUE);
-	IncrementDisconnectIORef();
-	int result = DisconnectEx(mSocket, reinterpret_cast<LPOVERLAPPED>(&mDisconnectOverlapped), TF_REUSE_SOCKET, 0);
+	PostQueuedMessage(&mDisconnectOverlapped);
+}
+
+bool NetworkManager::TryRecv()
+{
+	mRecvWSABuf.buf = mRecvBuffer + mRecvBytes;
+	mRecvWSABuf.len = sizeof(mRecvBuffer) - mRecvBytes;
+
+	IncrementRecvIORef();
+	DWORD flag = 0;
+	DWORD recvByte = 0;
+	auto result = WSARecv(mSocket, &mRecvWSABuf, 1, &recvByte, &flag, reinterpret_cast<OVERLAPPED*>(&mRecvOverlapped), nullptr);
 
 	if (result == SOCKET_ERROR)
 	{
-		if (WSAGetLastError() != WSA_IO_PENDING)
+		int error = WSAGetLastError();
+
+		if (error != WSA_IO_PENDING)
 		{
-			std::cout << "DisconnectEx Failed" << std::endl;
-			return;
+			DecrementRecvIORef();
+			return false;
 		}
 	}
+
+	return true;
 }
 
 void NetworkManager::BindIOCP()
@@ -173,32 +122,50 @@ void NetworkManager::BindIOCP()
 
 void NetworkManager::OnConnect()
 {
-	SetNetStateConnecting(FALSE);
+	SOCKADDR_IN sockAddr;
+	ZeroMemory(&sockAddr, sizeof(sockAddr));
+	sockAddr.sin_family = AF_INET;
+	sockAddr.sin_port = htons(mConnectPort);
+	inet_pton(AF_INET, mConnectIP, &sockAddr.sin_addr);
 
-	DecrementConnectIORef();
+	BindIOCP();
+
+	if (connect(mSocket, reinterpret_cast<SOCKADDR*>(&sockAddr), sizeof(sockAddr)) == SOCKET_ERROR)
+	{
+		SetNetStateConnecting(FALSE);
+		return;
+	}
+
+	SetNetStateConnecting(FALSE);
 
 	// 연결 상태로 변경
 	SetNetStateConnect();
 
+	if (!TryRecv())
+		TryDisconnect();
 }
 
 void NetworkManager::OnDisconnect()
 {
-	DecrementDisconnectIORef();
-
-	// disconnect 마무리 체크
-	TryDisconnect();
-
 	if (mSocket != INVALID_SOCKET)
 	{
 		closesocket(mSocket);
 		mSocket = INVALID_SOCKET;
 	}
+
+	TryDisconnect();
 }
 
 void NetworkManager::OnRecv(DWORD _transfer)
 {
 	DecrementRecvIORef();
+
+	mRecvBytes += _transfer;
+
+	if (!TryRecv())
+	{
+		
+	}
 }
 
 void NetworkManager::OnSend(DWORD _transfer)
@@ -231,12 +198,22 @@ void NetworkManager::HandleExceptionWorkThread(OVERLAPPED_EX* _context)
 	case IOType::Send:
 		DecrementSendIORef();
 		break;
-	case IOType::Connect:
-		DecrementConnectIORef();
-		break;
 	}
 
 	TryDisconnect();
+}
+
+void NetworkManager::PostQueuedMessage(OVERLAPPED_EX* _overlapped)
+{
+	auto result = PostQueuedCompletionStatus(mWorkIOCP, 0, reinterpret_cast<ULONG_PTR>(this), reinterpret_cast<LPOVERLAPPED>(_overlapped));
+
+	if (!result)
+	{
+		char logmsg[256] = { 0, };
+		sprintf_s(logmsg, "NetworkManager::PostQueuedMessage - PostQueuedCompletionStatus(). error:%d, IOType:%d", WSAGetLastError(), _overlapped->ioType);
+		assert(logmsg);
+		return;
+	}
 }
 
 void NetworkManager::WorkerThread()
@@ -248,11 +225,11 @@ void NetworkManager::WorkerThread()
 		ULONG_PTR key = 0;
 		int result = GetQueuedCompletionStatus(mWorkIOCP, &transfer, reinterpret_cast<PULONG_PTR>(&key), &overlapped, INFINITE);
 
-		OVERLAPPED_EX* context = reinterpret_cast<OVERLAPPED_EX*>(&overlapped);
-		if (result == FALSE || transfer == 0)
+		OVERLAPPED_EX* context = reinterpret_cast<OVERLAPPED_EX*>(overlapped);
+		if (result == FALSE)
 		{
-			if (context != nullptr && context->ioType != IOType::Disconnect)
-				TryDisconnect();
+			if (context != nullptr && (context->ioType == IOType::Recv || context->ioType == IOType::Send))
+				HandleExceptionWorkThread(context);
 
 			continue;
 		}

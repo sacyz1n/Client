@@ -41,10 +41,12 @@ namespace GameCore
 
 		NetResult CreatePerformance();
 
+		NetResult CreateUpdateTimer();
+
 		void MakeNetMessageOnClose(Session* _session, const Message* _msg, int8& _msgOperationType, int32& _sessionIndex);
 		void MakeNetMessageOnReceive(Session* _session, const Message* _msg, int8& _msgOperationType, int32& _sessionIndex, char* _buffer, int16& _copySize, const DWORD _ioSize);
 		void MakeNetMessageOnConnection(Session* _session, const Message* _msg, int8& _msgOperationType, int32& _sessionIndex);
-
+		void MakeNetMessageOnUpdate(const Message* _msg, int8& _msgOperationType);
 
 	private:
 		using WORKTHREADS = std::vector<std::shared_ptr<IOThread>>;
@@ -62,6 +64,9 @@ namespace GameCore
 		// Work Thread
 		bool		mIsRunWorkThread = true;
 		WORKTHREADS mWorkThreads;
+
+		// Update Timer
+		std::unique_ptr<std::thread> mUpdateThread;
 
 		SessionManager& mSessionManager;
 		std::shared_ptr<MessagePool> mMessagePool;

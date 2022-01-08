@@ -143,6 +143,7 @@ namespace GameCore
 		int32 MaxMessagePoolCount = INVALID_VALUE;
 		int32 ExtraMessagePoolCount = INVALID_VALUE;
 		int32 PerformancePacketMillisecondsTime = INVALID_VALUE;
+		int32 UpdateInterval = 100; // 0.1s == 100ms
 	};
 
 	struct ConnectionNetConfig
@@ -158,7 +159,8 @@ namespace GameCore
 		None = 0,
 		OnConnect,
 		OnClose,
-		OnRecv
+		OnRecv,
+		OnUpdate
 	};
 
 	struct Message
